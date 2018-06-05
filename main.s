@@ -70,15 +70,32 @@ _DEV9_   EQU 21 ; Device 9 is ready to use
 ;======================== MAIN Loop ===========================;
 MAIN PROC
 
-  FLAG_CHK "clear", _EREG_, _MEIF_, _MAIN_ticker
+  FLAG_CHK "clear", _EREG_, _MEIF_, _MAIN_check_delay
   FLAG "clear", _EREG_, (1<<_MEIF_)
   BL LED_BLINK
 
-_MAIN_ticker
-  FLAG_CHK "clear", _EREG_, _TF_, _MAIN_sleep
+_MAIN_check_delay
+  FLAG_CHK "clear", _EREG_, _DF_, _MAIN_run_ticker
+  FLAG "set", _EREG_, (1<<_NSF_)
+
+  LDR tmpa, =TC5
+  LDRB tmpd, [tmpa, #TC_STATUS_offset]
+  LSRS tmpd, #TC_STATUS_STOP_Pos + 1
+  BCC _MAIN_check_sleep
+
+  FLAG "clear", _EREG_, (1<<_NSF_)
+
+  LDR tmpa, =_DELAY_wait_exit
+  MOV PC, tmpa
+
+_MAIN_run_ticker
+  FLAG_CHK "clear", _EREG_, _TF_, _MAIN_check_sleep
   FLAG "clear", _EREG_, (1<<_TF_)
-  BL MAX7219_RUN
-  
+  BL TICKER
+
+_MAIN_check_sleep
+  FLAG_CHK "set", _EREG_, _NSF_, MAIN
+
 _MAIN_sleep
   WFI
   B.N MAIN
@@ -86,6 +103,26 @@ _MAIN_exit
   B.N MAIN
   ENDP
 ;==============================================================;
+
+
+
+
+;/****************************************************************/
+TICKER PROC
+	PUSH {LR}
+	
+	FLAG_CHK "set", _EREG_, _GSIF_, _TICKER_exit ; check global software interrupt, if it on, then exit
+	FLAG "set", _EREG_, (1<<_GSIF_)
+	
+	BL MAX7219_RUN
+
+	FLAG "clear", _EREG_, (1<<_GSIF_)
+	
+_TICKER_exit
+	POP {PC}
+	ENDP
+;/****************************************************************/
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

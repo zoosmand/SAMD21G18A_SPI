@@ -135,7 +135,7 @@ MAX7219_INIT PROC
 ini		RN R4
 prm		RN R5
 
-	FLAG "set", _EREG_, (3<<_DEV0_) ; mark the device as ready
+	FLAG "set", _EREG_, (1<<_DEV3_) ; mark the device as ready
 
 	;move parameters into RAM
 	MOVS tmp, #1
@@ -219,7 +219,7 @@ prmItem	RN R3
 	
 	FLAG_CHK "clear", _EREG_, _DEV3_, _MAX7219_RUN_exit
 	
-	BL SPI_SERCOM1_INIT
+	SPI_SERCOM_SELECT SERCOM1
 	
 	LDR ptrn, =tickerData
 	LDR prm, =tickerParams

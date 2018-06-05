@@ -88,56 +88,6 @@ _DELAY_wait_exit
 
 
 
-;==================== Device TestPinBlink =====================;
-TEST_PIN_BLINK_INIT PROC
-	PUSH {LR}
-	FLAG "set", _EREG_, (1<<_DEV3_) ; mark the device as ready
-	BL TEST_PIN_BLINK_INIT_PORT
-	POP {PC}
-	ENDP
-
-
-;--------------------------------------------------------------;
-TEST_PIN_BLINK_INIT_PORT PROC
-	LDR tmpa, =PORT0
-	; Timer Test Pin
-	; PA15-pin5/D5
-TestPin		EQU BIT_POS_15
-	LDR tmpd, =TestPin
-	STR tmpd, [tmpa, #PORT_DIRSET_offset]
-	LDR tmpd, =\
-		TestPin \
-	| PORT_WRCONFIG_WRPINCFG \
-	| PORT_WRCONFIG_DRVSTR
-	STR tmpd, [tmpa, #PORT_WRCONFIG_offset]
-
-	BX LR
-	ENDP
-
-
-;--------------------------------------------------------------;
-TEST_PIN_BLINK PROC
-	PUSH {R1-R2, LR}
-	
-	FLAG_CHK "clear", _EREG_, _DEV3_, _TEST_PIN_BLINK_exit
-	
-	LDR R0, =8
-_TEST_PIN_BLINK_cycle
-	LDR tmpa, =PORT0
-	LDR tmpd, =TestPin
-	STR tmpd, [tmpa, #PORT_OUTTGL_offset]
-	DELAY 0x07a0
-	SUBS R0, #1
-	BNE _TEST_PIN_BLINK_cycle
-
-_TEST_PIN_BLINK_exit	
-	POP {R1-R2, PC}
-	ENDP
-;==============================================================;
-
-
-
-
 ;======================= RAM emptier ==========================;
 ZEROED_DATA PROC
 	PUSH {R3-R4, LR}
