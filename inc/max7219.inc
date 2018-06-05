@@ -212,52 +212,52 @@ _MAX7219_INIT_exit
 
 
 MAX7219_RUN PROC
-	PUSH {R3-R5, LR}
-ptrn		RN R4
-prm			RN R5
-prmItem	RN R3
-	
-	FLAG_CHK "clear", _EREG_, _DEV3_, _MAX7219_RUN_exit
-	
-	SPI_SERCOM_SELECT SERCOM1
-	
-	LDR ptrn, =tickerData
-	LDR prm, =tickerParams
+    PUSH {R3-R5, LR}
+ptrn        RN R4
+prm         RN R5
+prmItem     RN R3
 
-	MOVS R0, #8
+    FLAG_CHK "clear", _EREG_, _DEV3_, _MAX7219_RUN_exit
+
+    SPI_SERCOM_SELECT SERCOM1
+
+    LDR ptrn, =tickerData
+    LDR prm, =tickerParams
+
+    MOVS R0, #8
 _MAX7219_RUN_select_row
-		; load number of blocks of 4xMAX7219
-		BL SPI_START
-		LDRB prmItem, [prm]
-		LSLS prmItem, #2 ; and multipy it by 4 (each block contains 4 MAX7219)
+    ; load number of blocks of 4xMAX7219
+    BL SPI_START
+    LDRB prmItem, [prm]
+    LSLS prmItem, #2 ; and multipy it by 4 (each block contains 4 MAX7219)
 
 _MAX7219_RUN_tx_row
-			MOV trPacket, R0
-			BL SPI_TX_PACKET
-			LDRB trPacket, [ptrn]
-			BL SPI_TX_PACKET
-			ADDS ptrn, ptrn, #1		
-			SUBS R3, #1 ; prmItem
-			BNE _MAX7219_RUN_tx_row
+    MOV trPacket, R0
+    BL SPI_TX_PACKET
+    LDRB trPacket, [ptrn]
+    BL SPI_TX_PACKET
+    ADDS ptrn, ptrn, #1		
+    SUBS R3, #1 ; prmItem
+    BNE _MAX7219_RUN_tx_row
 
-		BL SPI_STOP
-		SUBS R0, #1
-		BNE _MAX7219_RUN_select_row
+    BL SPI_STOP
+    SUBS R0, #1
+    BNE _MAX7219_RUN_select_row
 
-	; load direction 1 - left, 0 - right
-	MOVS R0, #1
-	LDRB prmItem, [prm, #2]
-	TST prmItem, R0
-	BEQ _MAX7219_RUN_ror
-	BL MAX7219_ROL
-	B.N _MAX7219_RUN_exit
+    ; load direction 1 - left, 0 - right
+    MOVS R0, #1
+    LDRB prmItem, [prm, #2]
+    TST prmItem, R0
+    BEQ _MAX7219_RUN_ror
+    BL MAX7219_ROL
+    B.N _MAX7219_RUN_exit
 
 _MAX7219_RUN_ror	
-	BL MAX7219_ROR
+    BL MAX7219_ROR
 
 _MAX7219_RUN_exit
-	POP {R3-R5, PC}
-	ENDP
+    POP {R3-R5, PC}
+    ENDP
 
 
 
