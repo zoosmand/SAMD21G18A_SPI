@@ -46,7 +46,7 @@ tickerDefaults DCB 0x01, 0x99, 0x01, 0x00
     AREA |.bss|, DATA, READWRITE
     ALIGN
 
-tickerData      SPACE 92 ; depends on number of blocks (segments), 3 (blocks) * 4 (segments) - 4 (taken word in RAM) (3*4 -4)
+tickerData      SPACE 96 ; depends on number of blocks (segments), 3 (blocks) * 4 (segments) * 8 (bytes in each segment - 64 bit, i.e. number of LCDs)
 tickerParams    DCB 0, 0, 0, 0
 
 	
@@ -126,14 +126,18 @@ ini     RN R4
 prm     RN R5
 
     FLAG "set", _EREG_, (1<<_DEV3_) ; mark the device as ready
+    FLAG "set", _SPIREG_, (1<<_SPI0DEV_) ; mark the device is busy
 
     ;move parameters into RAM
     MOVS tmp, #1
     MOVVA tickerDefaults, tickerParams
-
+    
     BL MAX7219_TC4_INIT
-    BL SPI_SERCOM1_INIT
-
+    ; Define SERCOM
+    SPI_SERCOM_SELECT SERCOM1
+    ; Define SS Pin 
+    SPI_SS_SELECT 0, 18 ; PORT0, PA18, PA18-PAD2-pin10/D10-SS
+    
     LDR prm, =tickerParams
     LDR ini, =tickerInit
 
@@ -186,6 +190,7 @@ _MAX7219_INIT_stop_error
     FLAG "clear", _EREG_, (3<<_DEV0_)
 
 _MAX7219_INIT_exit
+    FLAG "clear", _SPIREG_, (1<<_SPI0DEV_) ; mark the device is free
     POP {R4-R5, PC}
     ENDP
 
@@ -204,9 +209,18 @@ ptrn        RN R4
 prm         RN R5
 prmItem     RN R3
 
-    FLAG_CHK "clear", _EREG_, _DEV3_, _MAX7219_RUN_exit
+    FLAG_CHK "clear", _EREG_, _DEV3_, _MAX7219_RUN_exit ; check the device is ready
+    FLAG "set", _SPIREG_, (1<<_SPI0DEV_) ; mark the device is busy
 
     SPI_SERCOM_SELECT SERCOM1
+    SPI_SS_SELECT 0, 18 ; PORT0, PA18, PA18-PAD2-pin10/D10-SS
+    
+    LDR tmpa, =_SERCOM_
+    LDR tmpa, [tmpa]
+    LDR tmpd, =\
+      SPI_INTENSET_RXC \
+    | SPI_INTENSET_ERROR
+    STRH tmpd, [tmpa, #SPI_INTENCLR_offset]
 
     LDR ptrn, =tickerData
     LDR prm, =tickerParams
@@ -243,6 +257,7 @@ _MAX7219_RUN_ror
     BL MAX7219_ROR
 
 _MAX7219_RUN_exit
+    FLAG "clear", _SPIREG_, (1<<_SPI0DEV_) ; mark the device is free
     POP {R3-R5, PC}
     ENDP
 
@@ -256,7 +271,7 @@ _MAX7219_RUN_exit
 
 
 MAX7219_ROL PROC
-    PUSH {R0-R6, LR}
+    PUSH {R6, LR}
 data            RN R4
 prm             RN R5
 carry           RN R6
@@ -311,7 +326,7 @@ _MAX7219_ROL_row
     SUBS R0, #1
     BNE _MAX7219_ROL_select_row
 
-    POP {R0-R6, PC}
+    POP {R6, PC}
     ENDP
 		
 
@@ -323,7 +338,7 @@ _MAX7219_ROL_row
 
 
 MAX7219_ROR PROC
-    PUSH {R0-R6, LR}
+    PUSH {R6, LR}
 data            RN R4
 prm             RN R5
 carry           RN R6
@@ -374,7 +389,7 @@ _MAX7219_ROR_row
     SUBS R0, #1
     BNE _MAX7219_ROR_select_row
 
-    POP {R0-R6, PC}
+    POP {R6, PC}
     ENDP
 
 

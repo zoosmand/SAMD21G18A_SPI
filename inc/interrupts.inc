@@ -57,4 +57,22 @@ TC4_HANDLER PROC
 ;==============================================================;
 
 
+
+
+;========================== SERCOM1 ===========================;
+SERCOM1_HANDLER PROC
+	PUSH {R1-R2, LR}
+    
+	LDR tmpa, =SERCOM1
+    LDR trPacket, [tmpa, #SPI_DATA_offset]
+
+; Clear Flags
+_SERCOM0_HANDLER_exit
+	LDR tmpa, =SERCOM1
+	LDR tmpd, =SPI_INTFLAG_ERROR
+	STR tmpd, [tmpa, #SPI_INTFLAG_offset]
+	POP {R1-R2, PC}
+	ENDP
+;==============================================================;
+
   END

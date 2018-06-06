@@ -150,20 +150,60 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>215</LineNumber>
+          <LineNumber>75</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>1612</Address>
+          <Address>2292</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\inc\max7219.inc</Filename>
+          <Filename>.\inc\bmp280.inc</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\SAMD21G18A_SPI\./inc/max7219.inc\215</Expression>
+          <Expression>\\SAMD21G18A_SPI\./inc/bmp280.inc\75</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>64</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>2262</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>.\inc\bmp280.inc</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\SAMD21G18A_SPI\./inc/bmp280.inc\64</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>66</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>1474</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>.\inc\interrupts.inc</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\SAMD21G18A_SPI\./inc/interrupts.inc\66</Expression>
         </Bp>
       </Breakpoint>
+      <MemoryWindow1>
+        <Mm>
+          <WinNumber>1</WinNumber>
+          <SubType>0</SubType>
+          <ItemText>0x20000000</ItemText>
+          <AccSizeX>0</AccSizeX>
+        </Mm>
+      </MemoryWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>
@@ -210,10 +250,6 @@
         <Entry>
           <Name>System Viewer\SERCOM1</Name>
           <WinId>35903</WinId>
-        </Entry>
-        <Entry>
-          <Name>System Viewer\TC3</Name>
-          <WinId>35904</WinId>
         </Entry>
       </SystemViewers>
     </TargetOption>

@@ -4,6 +4,12 @@ Reset_HANDLER PROC
   NOP
   NOP
   NOP
+  
+  LDR tmpa, =_EREG_
+  LDR tmpa, =_SPIREG_
+  LDR tmpa, =SSPort
+  LDR tmpa, =SSPin
+  
 
   ; Clear registers
   REG "clear", _EREG_, 0xffffffff
@@ -439,29 +445,35 @@ sysTickVal EQU 0xffffff
 
 
 ;========================== Init NVIC =========================;
-TC3_irq  EQU BIT_POS_18
-TC3_pri  EQU (0xc0 & NVIC_PRI_Mask) << NVIC_PRI2_Pos
-TC4_irq  EQU BIT_POS_19
-TC4_pri  EQU (0xc0 & NVIC_PRI_Mask) << NVIC_PRI3_Pos
-TC5_irq  EQU BIT_POS_20
-TC5_pri  EQU (0x80 & NVIC_PRI_Mask) << NVIC_PRI0_Pos
+SERCOM1_irq     EQU BIT_POS_10
+SERCOM1_pri     EQU (0xc0 & NVIC_PRI_Mask) << NVIC_PRI2_Pos
 
-  LDR tmpa, =NVICISER_SETENA
-	LDR tmpd, =\
-    TC3_irq \
-	| TC4_irq \
-	| TC5_irq
-	STR tmpd, [tmpa]
-	
-	LDR tmpa, =NVICIPR
+TC3_irq         EQU BIT_POS_18
+TC3_pri         EQU (0xc0 & NVIC_PRI_Mask) << NVIC_PRI2_Pos
+TC4_irq         EQU BIT_POS_19
+TC4_pri         EQU (0xc0 & NVIC_PRI_Mask) << NVIC_PRI3_Pos
+TC5_irq         EQU BIT_POS_20
+TC5_pri         EQU (0x80 & NVIC_PRI_Mask) << NVIC_PRI0_Pos
 
-	LDR tmpd, =\
-	  TC3_pri \
-	+ TC4_pri
-	STR tmpd, [tmpa, #NVICIPR4_offset]
-	
-	LDR tmpd, =TC5_pri
-	STR tmpd, [tmpa, #NVICIPR5_offset]
+    LDR tmpa, =NVICISER_SETENA
+    LDR tmpd, =\
+      SERCOM1_irq \
+    | TC3_irq \
+    | TC4_irq \
+    | TC5_irq
+    STR tmpd, [tmpa]
+
+    LDR tmpa, =NVICIPR
+    LDR tmpd, =SERCOM1_pri
+    STR tmpd, [tmpa, #NVICIPR2_offset]
+
+    LDR tmpd, =\
+      TC3_pri \
+    | TC4_pri
+    STR tmpd, [tmpa, #NVICIPR4_offset]
+
+    LDR tmpd, =TC5_pri
+    STR tmpd, [tmpa, #NVICIPR5_offset]
 ;==============================================================;
 
 
@@ -501,7 +513,9 @@ _INIT_TC3_wait_sync
 
 ;==============================================================;
   BL DELAY_TC5_INIT
+  BL SPI_SERCOM1_INIT
   BL MAX7219_INIT
+  BL BMP280_INIT
 
 
 

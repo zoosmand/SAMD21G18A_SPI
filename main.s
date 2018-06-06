@@ -30,8 +30,8 @@ __heap_limit
   AREA |.text|, CODE, READONLY
   ALIGN
 
-  GBLA	GCNT
-GCNT SETA	0
+  GBLA  GCNT
+GCNT SETA   0
 
 
 tmpa     RN R1
@@ -131,6 +131,7 @@ _TICKER_exit
   GET utils.inc
   GET interrupts.inc
   GET max7219.inc
+  GET bmp280.inc
 
   GET var.inc
 
