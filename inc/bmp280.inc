@@ -56,18 +56,18 @@ bmp280  RN R4
     STRH tmpd, [tmpa, #SPI_INTENSET_offset]
 
 ;----------------------------------------------------;
-	; Get Sensor ID, BMP280 - 0x58, BMP280 - 0x60
-	LDR bmp280, =BMP280_id
+    ; Get Sensor ID, BMP280 - 0x58, BMP280 - 0x60
+    LDR bmp280, =BMP280_id
 
     LDR trPacket, =0xd0 ; id address
     LDR R0, =read_mask
-	ANDS trPacket, R0
+    ANDS trPacket, R0
 
     BL SPI_START
     BL SPI_RX_PACKET
     FLAG_CHK "set", _SPIREG_, _ERRF_, _BMP280_INIT_stop_error
 
-	LDR trPacket, =0
+    LDR trPacket, =0
     BL SPI_RX_PACKET
     FLAG_CHK "set", _SPIREG_, _ERRF_, _BMP280_INIT_stop_error
 
@@ -76,58 +76,58 @@ bmp280  RN R4
     BL SPI_STOP
 
 ;----------------------------------------------------;
-	; Collect Calibration Data 1
-	LDR bmp280, =BMP280_calib1
-    
+    ; Collect Calibration Data 1
+    LDR bmp280, =BMP280_calib1
+
     LDR trPacket, =0x88 ; calib00 address
     LDR R0, =read_mask
-	ANDS trPacket, R0
+    ANDS trPacket, R0
 
     BL SPI_START
     BL SPI_RX_PACKET
     FLAG_CHK "set", _SPIREG_, _ERRF_, _BMP280_INIT_stop_error
-	
-	LDR tmp, =(0xa1 - 0x88 + 1) ; calib25..calib00
-	MOV R8, tmp
-	LDR R0, =0
+
+    LDR tmp, =(0xa1 - 0x88 + 1) ; calib25..calib00
+    MOV R8, tmp
+    LDR R0, =0
 _BMP280_INIT_collect_calib1
-	LDR trPacket, =0
+    LDR trPacket, =0
     BL SPI_RX_PACKET
     FLAG_CHK "set", _SPIREG_, _ERRF_, _BMP280_INIT_stop_error
-	STRB trPacket, [bmp280, R0]
-	ADDS R0, #1
-	CMP R0, R8
-	BNE _BMP280_INIT_collect_calib1
-	
+    STRB trPacket, [bmp280, R0]
+    ADDS R0, #1
+    CMP R0, R8
+    BNE _BMP280_INIT_collect_calib1
+
     BL SPI_STOP
 	
 ;----------------------------------------------------;
-	; Config to Collect Humidity
+    ; Config to Collect Humidity
     BL SPI_START
 
     LDR trPacket, =0xf2
     LDR R0, =write_mask
-	ANDS trPacket, R0
-	BL SPI_TX_PACKET
+    ANDS trPacket, R0
+    BL SPI_TX_PACKET
 
     LDR trPacket, =0x01
     LDR R0, =write_mask
-	ANDS trPacket, R0
-	BL SPI_TX_PACKET
-    
+    ANDS trPacket, R0
+    BL SPI_TX_PACKET
+
     BL SPI_STOP
 
-	B _BMP280_INIT_exit
+    B _BMP280_INIT_exit
 
 _BMP280_INIT_stop_error
-	FLAG "clear", _EREG_, (1<<_DEV0_) ; mark the device as not ready
-	BL SPI_STOP
+    FLAG "clear", _EREG_, (1<<_DEV0_) ; mark the device as not ready
+    BL SPI_STOP
 	
 _BMP280_INIT_exit
-	FLAG "clear", _SPIREG_, (1<<_SPI1DEV_) ; mark the device is free
+    FLAG "clear", _SPIREG_, (1<<_SPI1DEV_) ; mark the device is free
 
-	POP {PC}
-	ENDP
+    POP {PC}
+    ENDP
 
 
 
@@ -137,16 +137,16 @@ _BMP280_INIT_exit
 
 
 BMP280_MEASURMENT PROC
-	PUSH {LR}
-	
-	FLAG_CHK "clear", _EREG_, _DEV0_, _BMP280_MEASURMENT_exit
+    PUSH {LR}
+
+    FLAG_CHK "clear", _EREG_, _DEV0_, _BMP280_MEASURMENT_exit
     FLAG "set", _SPIREG_, (1<<_SPI1DEV_) ; mark the device is busy
-    
+
     ; Define SERCOM
     SPI_SERCOM_SELECT SERCOM1
     ; Define SS Pin 
     SPI_SS_SELECT 0, 2 ; PORT0, PA02
-    
+
     LDR tmpa, =_SERCOM_
     LDR tmpa, [tmpa]
     LDR tmpd, =\
@@ -155,49 +155,49 @@ BMP280_MEASURMENT PROC
     STRH tmpd, [tmpa, #SPI_INTENSET_offset]
 
 ;----------------------------------------------------;
-	; Set Forced Power Mode.
+    ; Set Forced Power Mode.
     BL SPI_START
 
     LDR trPacket, =0xf4
     LDR R0, =write_mask
-	ANDS trPacket, R0
+    ANDS trPacket, R0
     BL SPI_RX_PACKET
 
     LDR trPacket, =0x25
     LDR R0, =write_mask
-	ANDS trPacket, R0
+    ANDS trPacket, R0
     BL SPI_RX_PACKET
-    
+
     BL SPI_STOP
 
-	DELAY 12
+    DELAY 12
 ;----------------------------------------------------;
-	; Collect Measurment Data
-	LDR bmp280, =BMP280_data
-    
+    ; Collect Measurment Data
+    LDR bmp280, =BMP280_data
+
     BL SPI_START
 
     LDR trPacket, =0xf7
     LDR R0, =read_mask
-	ANDS trPacket, R0
-	BL SPI_RX_PACKET
+    ANDS trPacket, R0
+    BL SPI_RX_PACKET
     FLAG_CHK "set", _SPIREG_, _ERRF_, _BMP280_MEASURMENT_stop_error
-    
-	LDR tmp, =(0xfc - 0xf7 + 1) ; temp_xlsb..press_msb
-	MOV R8, tmp
-	LDR R0, =0
+
+    LDR tmp, =(0xfc - 0xf7 + 1) ; temp_xlsb..press_msb
+    MOV R8, tmp
+    LDR R0, =0
 _BMP280_MEASURMENT_collect_data
     LDR trPacket, =0
     BL SPI_RX_PACKET
     FLAG_CHK "set", _SPIREG_, _ERRF_, _BMP280_MEASURMENT_stop_error
     STRB trPacket, [bmp280, R0]
     ADDS R0, #1
-	CMP R0, R8
-	BNE _BMP280_MEASURMENT_collect_data
-	
+    CMP R0, R8
+    BNE _BMP280_MEASURMENT_collect_data
+
     BL SPI_STOP
-	
-	B _BMP280_MEASURMENT_exit
+
+    B _BMP280_MEASURMENT_exit
 
 _BMP280_MEASURMENT_stop_error
     BL SPI_STOP
@@ -205,9 +205,9 @@ _BMP280_MEASURMENT_stop_error
 _BMP280_MEASURMENT_exit
     FLAG "clear", _SPIREG_, (1<<_SPI1DEV_) ; mark the device is free	
     POP {PC}
- 	ENDP
+    ENDP
 
 
 
-	END
+    END
 
