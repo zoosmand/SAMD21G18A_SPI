@@ -1,14 +1,14 @@
 __Var
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  AREA |.data|, DATA, READWRITE
-  ALIGN
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    AREA |.data|, DATA, READWRITE
+    ALIGN
 
-_EREG_    DCD 0
-_SERCOM_  DCD 0
+_EREG_      DCD 0
+_SERCOM_    DCD 0
 
 
-  END
+    END
 
 
 

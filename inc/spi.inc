@@ -12,7 +12,7 @@ SSPin       DCD 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     AREA |.text|, CODE, READONLY
     ALIGN
-_FWF_           EQU 0 ; First Word Flag
+_ERRF_          EQU 0 ; ERRor Flag
 _CCF_           EQU 1 ; Carry flag Captured Flag
 _SPI0DEV_       EQU 12 ; Device on SPI0 bus in-use
 _SPI1DEV_       EQU 13 ; Device on SPI1 bus in-use
@@ -160,9 +160,9 @@ SPI_SERCOM5_INIT_PORT PROC
 ;=========================================;
 SPI_SERCOM_INIT_ PROC
     PUSH {LR}
-spi1_dipo       EQU 0x03
-spi1_dopo       EQU 0x00
-spi1_baud       EQU 0x17 ;(48MHz/(1MHz*2)-1), 1M Baud
+spi1_dipo   EQU 0x03
+spi1_dopo   EQU 0x00
+spi1_baud   EQU 0x17 ;(48MHz/(1MHz*2)-1), 1M Baud
     LDR tmpa, =_SERCOM_
     LDR tmpa, [tmpa]
     LDR tmpd, [tmpa, #SPI_CTRLA_offset]
@@ -287,18 +287,27 @@ _SPI_TX_PACKET_wait_dre
 
 ;=========================================;
 SPI_RX_PACKET PROC
+    FLAG "clear", _SPIREG_, (1<<_ERRF_) ; clear error flag
+
     LDR tmpa, =_SERCOM_
     LDR tmpa, [tmpa]
     
+_SPI_RX_PACKET_wait_dre
+    LDR tmpd, [tmpa, #SPI_INTFLAG_offset]
+    LSRS tmpd, #SPI_INTFLAG_DRE_Pos + 1
+    BCC _SPI_RX_PACKET_wait_dre
+
+    STRH trPacket, [tmpa, #SPI_DATA_offset]
+
+_SPI_RX_PACKET_wait_txc
+    LDR tmpd, [tmpa, #SPI_INTFLAG_offset]
+    LSRS tmpd, #SPI_INTFLAG_TXC_Pos + 1
+    BCC _SPI_RX_PACKET_wait_txc
+
 _SPI_RX_PACKET_wait_rxc
     LDR tmpd, [tmpa, #SPI_INTFLAG_offset]
     LSRS tmpd, #SPI_INTFLAG_RXC_Pos + 1
-    BCC _SPI_RX_PACKET_wait_rxc
-
-_SPI_RX_PACKET_wait_rxc2
-    LDR tmpd, [tmpa, #SPI_INTFLAG_offset]
-    LSRS tmpd, #SPI_INTFLAG_RXC_Pos + 1
-    BCS _SPI_RX_PACKET_wait_rxc2
+    BCS _SPI_RX_PACKET_wait_rxc
 
     BX LR
     ENDP

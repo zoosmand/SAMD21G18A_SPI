@@ -3,54 +3,54 @@ __Macroses
 
 
 ;################ Register's Flags Manipulate ##################
-  MACRO 
+    MACRO 
 $label FLAG $m, $reg, $flag
-  LDR tmpa, =$reg
-  LDR tmpd, [tmpa]
-  LDR tmp, =$flag
+    LDR tmpa, =$reg
+    LDR tmpd, [tmpa]
+    LDR tmp, =$flag
     IF ("$m" = "clear")
-      BICS tmpd, tmp
+        BICS tmpd, tmp
     ELIF ("$m" = "set")
-      ORRS tmpd, tmp
+        ORRS tmpd, tmp
     ELSE
-      INFO 1, "Use \"set\" or \"clear\" flag parameter."
+        INFO 1, "Use \"set\" or \"clear\" flag parameter."
     ENDIF
-  STR tmpd, [tmpa]
-  MEND
+    STR tmpd, [tmpa]
+    MEND
 
-  MACRO 
+    MACRO 
 $label REG $m, $reg, $flag
-  FLAG $m, $reg, $flag
-  MEND
+    FLAG $m, $reg, $flag
+    MEND
 
 
 
 ;#################### Check Register's Flag ####################
-  MACRO 
+    MACRO 
 $label FLAG_CHK $m, $reg, $flag, $path
-  LDR tmpa, =$reg
-  LDR tmpd, [tmpa]
-  LSRS tmpd, #$flag + 1
+    LDR tmpa, =$reg
+    LDR tmpd, [tmpa]
+    LSRS tmpd, #$flag + 1
     IF ("$m" = "clear")
-      BCC $path
+        BCC $path
     ELIF ("$m" = "set")
-      BCS $path
+        BCS $path
     ELSE
-      INFO 1, "Use \"set\" or \"clear\" flag parameter."
+        INFO 1, "Use \"set\" or \"clear\" flag parameter."
     ENDIF
-  MEND
+    MEND
 
 
 
 
 ;########################### PSR ##############################
-	MACRO
+    MACRO
 $label APSRC $flag
-	LDR tmp, =$flag
-	MRS tmpd, APSR
-	BICS tmpd, tmp
-	MSR APSR_nzcvq, tmpd
-	MEND
+    LDR tmp, =$flag
+    MRS tmpd, APSR
+    BICS tmpd, tmp
+    MSR APSR_nzcvq, tmpd
+    MEND
 
 
-  END
+    END
