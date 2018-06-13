@@ -9,6 +9,10 @@ Reset_HANDLER PROC
     LDR tmpa, =_SPIREG_
     LDR tmpa, =SSPort
     LDR tmpa, =SSPin
+    LDR tmpa, =tickerData
+    
+    LDR tmpa, =fontMap_5x7
+    LDR tmpa, =compMap_5x7
 
 
     ; Clear registers

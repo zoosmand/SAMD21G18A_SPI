@@ -73,6 +73,7 @@ MAIN PROC
     FLAG "clear", _EREG_, (1<<_MEIF_)
     BL LED_BLINK
     BL MEASURMENT
+    BL MAX7219_PREPARE
 
 _MAIN_check_delay
     FLAG_CHK "clear", _EREG_, _DF_, _MAIN_run_ticker

@@ -12,6 +12,7 @@ __BMP280
 BMP280_calib1   FILL 28, 0, 4
 BMP280_data     FILL 8, 0, 4
 BMP280_id       DCD 0
+_MATH_          SPACE 16
 	
 
 
@@ -38,6 +39,10 @@ bmp280  RN R4
 
     LDR tmpa, =BMP280_data
     MOVS R4, #2
+    BL ZEROED_DATA
+
+    LDR tmpa, =_MATH_
+    MOVS R4, #4
     BL ZEROED_DATA
 
     LDR tmpa, =BMP280_id
