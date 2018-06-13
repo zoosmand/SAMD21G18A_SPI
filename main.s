@@ -111,7 +111,7 @@ _MAIN_exit
 MEASURMENT PROC
     PUSH {LR}
 
-    FLAG_CHK "set", _EREG_, _GSIF_, _MEASURMENT_exit ; check global software interrupt, if it on, then exit
+    FLAG_CHK "set", _EREG_, _GSIF_, _MEASURMENT_exit ; check global software interrupt, if it's on, then exit
     FLAG "set", _EREG_, (1<<_GSIF_)
 
     BL BMP280_MEASURMENT
@@ -129,7 +129,7 @@ _MEASURMENT_exit
 TICKER PROC
     PUSH {LR}
 
-    FLAG_CHK "set", _EREG_, _GSIF_, _TICKER_exit ; check global software interrupt, if it on, then exit
+    FLAG_CHK "set", _EREG_, _GSIF_, _TICKER_exit ; check global software interrupt, if it's on, then exit
     FLAG "set", _EREG_, (1<<_GSIF_)
 
     BL MAX7219_RUN
